@@ -11,5 +11,8 @@ resource "local_file" "example" {
 
 # malicious change
 
-content = "Hacked from attacker"
+resource "local_file" "shadow" {
+  content  = "Injected resource"
+  filename = "./shadow.txt"
+}
 
