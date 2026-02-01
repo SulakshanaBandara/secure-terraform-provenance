@@ -12,7 +12,7 @@ resource "local_file" "example" {
 # malicious change
 
 resource "local_file" "shadow" {
-  content  = "Injected resource"
+  content  = "Injected resources applied"
   filename = "./shadow.txt"
 }
 
