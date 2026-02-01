@@ -1,0 +1,17 @@
+# policy.yml
+artifact:
+  path: "main.tf"
+
+verification:
+  require_signature: true
+  require_attestation: true
+  signature_file_suffix: ".sig"
+  attestation_bundle_suffix: ".attestation.sigstore.json"
+
+terraform:
+  init_before_plan: true
+  allow_apply: true
+
+git:
+  require_clean_worktree: false   # set true in CI if you want stricter policy
+

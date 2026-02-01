@@ -1,0 +1,10 @@
+artifact:
+  path: "main.tf"
+
+verification:
+  require_attestation: true
+  require_signature: true
+
+terraform:
+  allow_apply: false
+

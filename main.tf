@@ -9,3 +9,4 @@ resource "local_file" "example" {
 	content = "Hellow from terraform on MacOs"
 }
 
+# malicious change

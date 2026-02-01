@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "securetf"
+version = "0.1.0"
+description = "Secure Terraform enforcement using Sigstore Cosign blob signatures and attestations"
+requires-python = ">=3.9"
+dependencies = [
+  "pyyaml"
+]
+
+[project.scripts]
+securetf = "securetf.cli:main"
+
