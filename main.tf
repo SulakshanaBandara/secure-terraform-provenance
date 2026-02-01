@@ -10,3 +10,6 @@ resource "local_file" "example" {
 }
 
 # malicious change
+
+content = "Hacked from attacker"
+
