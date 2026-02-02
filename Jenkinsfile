@@ -25,15 +25,9 @@ pipeline {
       }
     }
 
-    stage('Verify Provenance (ALL branches)') {
-      steps {
-        sh '''
-          . .venv/bin/activate
-          securetf verify main.tf --pubkey cosign.pub
-        '''
-      }
-    }
-
+    // -------------------------------
+    // MAIN BRANCH: attest → verify
+    // -------------------------------
     stage('Attest in CI (main only)') {
       when {
         branch 'main'
@@ -52,6 +46,21 @@ pipeline {
       }
     }
 
+    stage('Verify Provenance (main only)') {
+      when {
+        branch 'main'
+      }
+      steps {
+        sh '''
+          . .venv/bin/activate
+          securetf verify main.tf --pubkey cosign.pub
+        '''
+      }
+    }
+
+    // -------------------------------
+    // ALL BRANCHES: Terraform plan
+    // -------------------------------
     stage('Terraform Init') {
       steps {
         sh 'terraform init -no-color'
@@ -63,7 +72,6 @@ pipeline {
         sh 'terraform plan -no-color'
       }
     }
-
   }
 
   post {
