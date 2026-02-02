@@ -12,7 +12,7 @@ resource "local_file" "example" {
 # malicious change
 
 resource "local_file" "shadow" {
-  content  = "resources are  not applied"
+  content  = "resources not applied"
   filename = "./shadow.txt"
 }
 
