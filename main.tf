@@ -1,3 +1,4 @@
+#edit
 terraform {
 	required_version = ">= 1.0.0"
 }
@@ -12,7 +13,7 @@ resource "local_file" "example" {
 # malicious change
 
 resource "local_file" "shadow" {
-  content  = "resources not applied"
+  content  = "touch resources not applied"
   filename = "./shadow.txt"
 }
 
