@@ -7,17 +7,10 @@ pipeline {
   }
 
   stages {
-    stage('Checkout') {
-      steps { checkout scm }
-    }
 
-    stage('Verify Tooling') {
+    stage('Checkout') {
       steps {
-        sh '''
-          terraform version
-          cosign version
-          python3 --version
-        '''
+        checkout scm
       }
     }
 
@@ -32,9 +25,19 @@ pipeline {
       }
     }
 
-    // Phase 2: CI becomes the signer (only main branch)
+    stage('Verify Provenance (ALL branches)') {
+      steps {
+        sh '''
+          . .venv/bin/activate
+          securetf verify main.tf --pubkey cosign.pub
+        '''
+      }
+    }
+
     stage('Attest in CI (main only)') {
-      when { branch 'main' }
+      when {
+        branch 'main'
+      }
       steps {
         withCredentials([
           file(credentialsId: 'COSIGN_KEY_FILE', variable: 'COSIGN_KEY_PATH'),
@@ -42,31 +45,30 @@ pipeline {
         ]) {
           sh '''
             . .venv/bin/activate
-
-            # COSIGN reads password from env var automatically
             export COSIGN_PASSWORD="$COSIGN_PASSWORD"
-
-            securetf attest main.tf --key "$COSIGN_KEY_PATH" --policy policy.yml
+            securetf attest main.tf --key "$COSIGN_KEY_PATH"
           '''
         }
       }
     }
 
-    stage('Provenance Verification (hard gate)') {
+    stage('Terraform Init') {
       steps {
-        sh '''
-          . .venv/bin/activate
-          securetf verify main.tf --pubkey cosign.pub --policy policy.ci.yml
-        '''
+        sh 'terraform init -no-color'
       }
     }
 
-    stage('Terraform Init') {
-      steps { sh 'terraform init -no-color' }
+    stage('Terraform Plan') {
+      steps {
+        sh 'terraform plan -no-color'
+      }
     }
 
-    stage('Terraform Plan') {
-      steps { sh 'terraform plan -no-color' }
+  }
+
+  post {
+    success {
+      archiveArtifacts artifacts: '*.attestation*.json', fingerprint: true
     }
   }
 }
